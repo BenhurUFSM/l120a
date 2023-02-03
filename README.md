@@ -19,6 +19,7 @@ Os principais conceitos da disciplina são:
 - alocação dinâmica de memória (alocação de um vetor com malloc)
 
 O trabalho é individual.
+
 O prazo ainda não está definido, aconselho que seja antes do encerramento das matrículas.
 
 Em caso de dúvidas, envie mail para o professor, eventuais alterações nesta descrição serão descritas em um comentários datados, logo abaixo desta linha.
