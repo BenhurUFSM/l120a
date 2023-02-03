@@ -2,7 +2,7 @@
 
 Avaliação final (mesmo) para l120a.
 
-Deve ser desenvolvido e entregue um programa escrito na linguagem C, dentro do prazo estipulado, de acordo com o descrito [em anexo]().
+Deve ser desenvolvido e entregue um programa escrito na linguagem C, dentro do prazo estipulado, de acordo com o descrito [em anexo](4t.md).
 Além do programa, o aluno deve entregar uma autoavaliação, que consiste em um texto no qual descreve o funcionamento do programa, dá uma nota entre 0 e 10 para o programa, e outra nota entre 0 e 10, que deve refletir o conhecimento do aluno nos conceitos relativos à disciplina, listados abaixo.
 Para cada conceito, pensa se sabe o que é, se sabe pra que serve, se sabe como usar.
 
