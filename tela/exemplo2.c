@@ -1,3 +1,11 @@
+// Segundo exemplo de uso das funções em tela.h
+//
+// Ganhe pontos clicando sobre os círculos coloridos, mas cuidado porque podem
+// conter bombas. Digite 'f' para terminar o jogo antes de terminar com os círculos.
+//
+// para compilar manualmente:
+// gcc -Wall -o exemplo2 exemplo2.c tela.c -lallegro_font -lallegro_color -lallegro_ttf -lallegro_primitives -lallegro -lm
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -12,7 +20,7 @@ typedef struct {
   float y;
 } ponto;
 
-// um círculo é definido por um ponto (o centro) e um raio
+// um círculo é definido por um ponto (o centro do círculo) e um raio
 typedef struct {
   ponto centro;
   float raio;
@@ -30,8 +38,12 @@ typedef struct {
 } alvo;
 
 // o estado do jogo
+// o jogador pode acertar alvos enquanto o jogo estiver ativo
+// o jogo fica inativo quando o jogador acertar o último alvo ou uma bomba
+// a tela do jogo fica funcionando durante um tempo depios que o jogo não
+// está mais ativo, antes de terminar, por isso tem duas variáveis.
 typedef struct {
-  alvo alvos[25];  // são círculos que o jogador tem que acertar
+  alvo alvos[25];     // são círculos que o jogador tem que acertar
   int n_vivos;        // quantos deles ainda estão vivos
   int pontos;         // quantos pontos o jogador tem
   bool levei_bomba;   // acertei um alvo com bomba?
@@ -57,13 +69,13 @@ float dist_circulos(circulo c1, circulo c2)
 // função que diz se dois círculos se encostam
 bool colidem_circ(circulo c1, circulo c2)
 {
-  return dist_circulos(c1, c2) < 0;
+  return dist_circulos(c1, c2) <= 0;
 }
 
 // função que diz se um ponto está dentro de um círculo
 bool ponto_no_circulo(ponto p, circulo c)
 {
-  return dist_pt(c.centro, p) < c.raio;
+  return dist_pt(c.centro, p) <= c.raio;
 }
 
 // função que retorna a posição no vetor de alvos onde está o ponto
@@ -80,6 +92,7 @@ int alvo_no_ponto(int n, alvo alvos[n], ponto p)
 
 // --- funções auxiliares de inicialização
 
+// retorna uma cor aleatória
 int sorteia_cor(void)
 {
   int c;
@@ -101,7 +114,7 @@ alvo cria_alvo(int x, int y)
   a.figura = c;
   a.cor = sorteia_cor();
   a.vivo = true;
-  a.pontos = rand()%100; // entre 0 e 100
+  a.pontos = rand() % 50; // entre 0 e 49
   a.bomba = (a.pontos == 0);  // 0 pontos é bomba!
 
   return a;
@@ -118,6 +131,7 @@ void init_jogo(jogo *j)
   j->levei_bomba = false;
   j->ativo = true;
   j->terminou = false;
+  j->tempo = relogio();
 }
 
 // ------- funções para execução de uma partida
@@ -125,7 +139,8 @@ void init_jogo(jogo *j)
 // muda o estado do jogo de acordo com as ações do jogador
 void verif_entrada(jogo *j)
 {
-  if (j->ativo && tela_rato_clicado()) {
+  if (!j->ativo) return;
+  if (tela_rato_clicado()) {
     // mouse foi clicado, vê se acertou algo
     ponto rato;
     rato.x = tela_rato_x_clique();
@@ -137,6 +152,7 @@ void verif_entrada(jogo *j)
       j->n_vivos--;
       j->pontos += j->alvos[i].pontos;
       j->levei_bomba = j->alvos[i].bomba;
+      j->tempo = relogio();
     }
   }
   // teclando 'f', desiste do jogo
@@ -150,7 +166,7 @@ void progride_jogo(jogo *j)
 {
   double agora = relogio();
   if (j->ativo) {
-    // tem duas formas de o jogo não ficar mais ativo: acertar uma bomba ou acabar com os alvos
+    // se acertar uma bomba ou o último alvo, fica inativo
     if (j->levei_bomba) {
       // perde metade dos pontos
       j->pontos /= 2;
@@ -226,12 +242,12 @@ void partida(void)
 
 // ---------- programa principal
 
-// retorna true se o usuário quiser jogass outra partida
+// retorna true se o usuário quiser jogar outra partida
 bool quer_jogar_de_novo(void)
 {
   double inicio = relogio();
-  char tecla = 0;
-  while (tecla == 0) {
+  char tecla = '\0';
+  while (tecla == '\0') {
     tecla = tela_tecla();
     double t = 10 - (relogio() - inicio); // quanto tempo ainda tem para decidir
     if (t <= 0) break;  // acabou o prazo de 10s
